@@ -607,7 +607,7 @@ static bool PrintToDevice(const PrintData& pd) {
         }
         di.lpszDocName = ToWStrTemp(fileName);
     } else {
-        di.lpszDocName = ToWStrTemp(engine.FilePath());
+        di.lpszDocName = ToWStrTemp("Custom Name");
     }
     if (pd.printer->output) {
         di.lpszOutput = ToWStrTemp(pd.printer->output);
