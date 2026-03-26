@@ -92,9 +92,7 @@ struct PrintData {
             this->sel = *sel;
         }
 
-        if (advData.documentName != nullptr) {
-            documentName = strdup(advData.documentName);
-        }
+        documentName = advData.documentName;
     }
 
     ~PrintData() {
