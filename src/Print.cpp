@@ -71,6 +71,7 @@ struct PrintData {
     ProgressUpdateCb progressCb;
     AbortCookieManager* abortCookie = nullptr;
     bool failedEngineClone = false;
+    char* documentName = nullptr;
 
     PrintData(EngineBase* engine, Printer* printer, Vec<PRINTPAGERANGE>& ranges, Print_Advanced_Data& advData,
               int rotation = 0, Vec<SelectionOnPage>* sel = nullptr) {
@@ -90,11 +91,16 @@ struct PrintData {
         } else {
             this->sel = *sel;
         }
+
+        if (advData.documentName != nullptr) {
+            documentName = strdup(advData.documentName);
+        }
     }
 
     ~PrintData() {
         delete printer;
         SafeEngineRelease(&engine);
+        str::Free(documentName);
     }
 };
 
@@ -607,7 +613,7 @@ static bool PrintToDevice(const PrintData& pd) {
         }
         di.lpszDocName = ToWStrTemp(fileName);
     } else {
-        di.lpszDocName = ToWStrTemp("Custom Name");
+        di.lpszDocName = ToWStrTemp(pd.documentName != nullptr ? pd.documentName : engine.FilePath());
     }
     if (pd.printer->output) {
         di.lpszOutput = ToWStrTemp(pd.printer->output);
@@ -1465,6 +1471,8 @@ static void ApplyPrintSettings(Printer* printer, const char* settings, int pageC
         } else if (str::Parse(s, "%d%$", &pr.nFromPage)) {
             pr.nFromPage = pr.nToPage = limitValue(pr.nFromPage, (DWORD)1, (DWORD)pageCount);
             ranges.Append(pr);
+        } else if (str::StartsWith(s, "document-name=")) {
+            advanced.documentName = s + 14;
         } else if (str::EqI(s, "even")) {
             advanced.range = PrintRangeAdv::Even;
         } else if (str::EqI(s, "odd")) {

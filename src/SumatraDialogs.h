@@ -33,10 +33,12 @@ struct Print_Advanced_Data {
     PrintScaleAdv scale;
     PrintRotationAdv rotation;
     bool autoRotate;
+    char* documentName;
 
     explicit Print_Advanced_Data(PrintRangeAdv range = PrintRangeAdv::All, PrintScaleAdv scale = PrintScaleAdv::Shrink,
-                                 PrintRotationAdv rotation = PrintRotationAdv::Auto, bool autoRotate = true)
-        : range(range), scale(scale), rotation(rotation), autoRotate(autoRotate) {}
+                                 PrintRotationAdv rotation = PrintRotationAdv::Auto, bool autoRotate = true,
+                                 const char* documentName = nullptr)
+        : range(range), scale(scale), rotation(rotation), autoRotate(autoRotate), documentName(str::Dup(documentName)) {}
 };
 
 HPROPSHEETPAGE CreatePrintAdvancedPropSheet(Print_Advanced_Data* data, ScopedMem<DLGTEMPLATE>& dlgTemplate);
